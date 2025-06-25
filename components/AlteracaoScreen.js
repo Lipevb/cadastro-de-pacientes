@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { 
-  View, 
-  Text, 
   StyleSheet, 
   TextInput, 
   TouchableOpacity, 
   ScrollView,
+  Alert,
   ActivityIndicator
 } from 'react-native';
 import axios from 'axios';
+
+
+import { ContainerTematico, ViewTematica, TextoTematico } from '../components/ComponentesTematicos'; 
+import { Colors } from '../theme'; 
 
 export default function AlteracaoScreen({ navigation }) {
   const [cpf, setCpf] = useState('');
@@ -17,7 +20,7 @@ export default function AlteracaoScreen({ navigation }) {
 
   const handleBuscar = async () => {
     if (!cpf) {
-      alert('Por favor, informe o CPF do paciente');
+      Alert.alert('Erro', 'Por favor, informe o CPF do paciente');
       return;
     }
     
@@ -28,7 +31,6 @@ export default function AlteracaoScreen({ navigation }) {
         'https://6851e5138612b47a2c0b8562.mockapi.io/api/cp/Pacientes'
       );
       
-      // Filtrando pelo CPF informado
       const pacienteEncontrado = response.data.find(p => p.cpf === cpf);
       
       setLoading(false);
@@ -36,36 +38,37 @@ export default function AlteracaoScreen({ navigation }) {
       if (pacienteEncontrado) {
         setPaciente(pacienteEncontrado);
       } else {
-        alert('Nenhum paciente encontrado com este CPF');
+        Alert.alert('Aviso', 'Nenhum paciente encontrado com este CPF');
         setPaciente(null);
       }
     } catch (error) {
       setLoading(false);
-      alert('Falha ao buscar paciente. Tente novamente.');
+      Alert.alert('Erro', 'Falha ao buscar paciente. Tente novamente.');
       console.error('Erro ao buscar:', error);
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View style={styles.container}>
-        <View style={styles.header}>
+      <ContainerTematico style={styles.container}>
+        <ViewTematica style={styles.header}>
           <TouchableOpacity 
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Text style={styles.backButtonText}>← Voltar</Text>
+            <TextoTematico style={styles.backButtonText}>← Voltar</TextoTematico>
           </TouchableOpacity>
-          <Text style={styles.title}>Alterar Cadastro de Paciente</Text>
-        </View>
+          <TextoTematico style={styles.title}>Alterar Cadastro de Paciente</TextoTematico>
+        </ViewTematica>
         
-        <View style={styles.searchContainer}>
-          <Text style={styles.label}>CPF do Paciente</Text>
+        <ViewTematica style={styles.searchContainer}>
+          <TextoTematico style={styles.label}>CPF do Paciente</TextoTematico>
           <TextInput
             style={styles.input}
             value={cpf}
             onChangeText={setCpf}
             placeholder="000.000.000-00"
+            placeholderTextColor={Colors.text}
             keyboardType="numeric"
           />
           
@@ -75,49 +78,44 @@ export default function AlteracaoScreen({ navigation }) {
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={Colors.white} />
             ) : (
-              <Text style={styles.searchButtonText}>Buscar</Text>
+              <TextoTematico style={styles.searchButtonText}>Buscar</TextoTematico>
             )}
           </TouchableOpacity>
-        </View>
+        </ViewTematica>
         
         {paciente && (
-          <View style={styles.resultContainer}>
-            <Text style={styles.resultTitle}>Dados do Paciente</Text>
+          <ViewTematica style={styles.resultContainer}>
+            <TextoTematico style={styles.resultTitle}>Dados do Paciente</TextoTematico>
             
-            <View style={styles.tableRow}>
-              <Text style={styles.tableHeader}>Campo</Text>
-              <Text style={styles.tableHeader}>Valor</Text>
-            </View>
+            <ViewTematica style={styles.tableRow}>
+              <TextoTematico style={styles.tableCell}>Nome</TextoTematico>
+              <TextoTematico style={styles.tableCell}>{paciente.nome}</TextoTematico>
+            </ViewTematica>
             
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Nome</Text>
-              <Text style={styles.tableCell}>{paciente.nome}</Text>
-            </View>
+            <ViewTematica style={styles.tableRow}>
+              <TextoTematico style={styles.tableCell}>CPF</TextoTematico>
+              <TextoTematico style={styles.tableCell}>{paciente.cpf}</TextoTematico>
+            </ViewTematica>
             
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>CPF</Text>
-              <Text style={styles.tableCell}>{paciente.cpf}</Text>
-            </View>
+            <ViewTematica style={styles.tableRow}>
+              <TextoTematico style={styles.tableCell}>Email</TextoTematico>
+              <TextoTematico style={styles.tableCell}>{paciente.email}</TextoTematico>
+            </ViewTematica>
             
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Email</Text>
-              <Text style={styles.tableCell}>{paciente.email}</Text>
-            </View>
+            <ViewTematica style={styles.tableRow}>
+              <TextoTematico style={styles.tableCell}>Telefone</TextoTematico>
+              <TextoTematico style={styles.tableCell}>{paciente.telefone}</TextoTematico>
+            </ViewTematica>
             
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Telefone</Text>
-              <Text style={styles.tableCell}>{paciente.telefone}</Text>
-            </View>
-            
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Endereço</Text>
-              <Text style={styles.tableCell}>{paciente.endereco}</Text>
-            </View>
-          </View>
+            <ViewTematica style={styles.tableRow}>
+              <TextoTematico style={styles.tableCell}>Endereço</TextoTematico>
+              <TextoTematico style={styles.tableCell}>{paciente.endereco}</TextoTematico>
+            </ViewTematica>
+          </ViewTematica>
         )}
-      </View>
+      </ContainerTematico>
     </ScrollView>
   );
 }
@@ -127,22 +125,21 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   container: {
-    flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 30,
     paddingTop: 10,
+    backgroundColor: 'transparent',
   },
   backButton: {
     padding: 10,
   },
   backButtonText: {
     fontSize: 16,
-    color: '#4a90e2',
+    color: Colors.primaryButton,
   },
   title: {
     fontSize: 20,
@@ -150,10 +147,9 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   searchContainer: {
-    backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: Colors.shadowColor,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -166,30 +162,30 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   input: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: Colors.inputBackground,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: Colors.inputBorder,
     borderRadius: 5,
     padding: 12,
     marginBottom: 15,
     fontSize: 16,
+    color: Colors.text,
   },
   searchButton: {
-    backgroundColor: '#4a90e2',
+    backgroundColor: Colors.primaryButton,
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
   },
   searchButtonText: {
-    color: 'white',
+    color: Colors.white,
     fontSize: 18,
     fontWeight: 'bold',
   },
   resultContainer: {
-    backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: Colors.shadowColor,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -204,14 +200,9 @@ const styles = StyleSheet.create({
   tableRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: Colors.inputBorder,
   },
-  tableHeader: {
-    flex: 1,
-    padding: 10,
-    fontWeight: 'bold',
-    backgroundColor: '#f2f2f2',
-  },
+
   tableCell: {
     flex: 1,
     padding: 10,
